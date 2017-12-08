@@ -1,23 +1,7 @@
 import React, { Component } from 'react';
 import { NavigationActions } from 'react-navigation';
-
-import {
-  Row,
-  Subtitle,
-  Text,
-  Title,
-  View,
-  Divider,
-  Screen,
-  ListView,
-  TouchableOpacity,
-  Caption,
-  Tile,
-  Heading,
-  Image,
-  Overlay
-} from '@shoutem/ui';
-
+import {View, FlatList, TouchableOpacity, Dimensions} from 'react-native';
+import { Tile, List, ListItem, Card, Text } from 'react-native-elements'
 
 import BookData from './assets/BookData';
 import BookImagesData from './assets/BookImagesData';
@@ -29,26 +13,22 @@ export default class BookDetails extends Component {
     this.readBook = this.readBook.bind(this);
   }
 
-  readBook(index) {
+  readBook(chapter) {
     const { navigate } = this.props.navigation;
     const bookData = this.props.navigation.state.params;
     const book = BookData.getData(bookData.filename);
-    navigate('Read', {book: book, chapter: index });
+    navigate('Read', {book: book, chapter: chapter-1 });
   }
-  renderRow(rowData, sectionId, index) {
-    const chapter = parseInt(index) + 1;
+
+  renderRow(rowData) {
+    const chapter = parseInt(rowData.chapter);
 
     return (
-      <TouchableOpacity onPress={() => {this.readBook(index)}}>
-      <Row>
-      <View styleName="vertical stretch space-between">
-        <Subtitle>{rowData.title}</Subtitle>
-        <View styleName="horizontal space-between">
-          <Caption>Chapter {chapter}</Caption>
-        </View>
-      <Divider styleName="line" />
-      </View>
-      </Row>
+      <TouchableOpacity onPress={() => this.readBook(chapter)}>
+      <Card
+        title={`Chapter ` + chapter}>
+        <Text h4>{rowData.title}</Text>
+      </Card>
       </TouchableOpacity>
     )
   }
@@ -58,13 +38,23 @@ export default class BookDetails extends Component {
     const book = BookData.getData(bookData.filename);
     const bookImg = BookImagesData.getData(bookData.filename.replace('.json', '.jpg'));
     return (
-      <Screen styleName="pap1er">
-        <Tile>
-          <Heading>{bookData.title}</Heading>
-          <Caption styleName="sm-gutter-horizontal">{bookData.author}</Caption>
-        </Tile>
-        <ListView data={book} renderRow={this.renderRow} />
-      </Screen> 
+      <View>
+        <Tile
+          featured
+          height={130}
+          imageSrc={bookImg}
+          title={bookData.title}
+          caption={bookData.author}
+        />
+
+        <List containerStyle={{marginBottom: 265}}>
+          <FlatList
+            renderItem={({ item }) => {return this.renderRow(item);}}
+            data={book}
+            keyExtractor={(item, index) => index}
+          />
+        </List>
+      </View> 
     );
   }
 }

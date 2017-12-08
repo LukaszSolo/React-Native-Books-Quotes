@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
 import Fuse from 'fuse.js';
+import _ from 'lodash';
 
 import { NavigationActions } from 'react-navigation';
-import { SearchBar } from 'react-native-elements'
-import { Screen, ListView, TouchableOpacity, Card, Image, GridRow} from '@shoutem/ui';
-import {View} from 'react-native';
+import { SearchBar, List, ListItem, Avatar } from 'react-native-elements'
+
+import {View, FlatList} from 'react-native';
+
 import BookImagesData from './assets/BookImagesData';
 
 export default class BooksImageList extends Component {
@@ -57,47 +59,60 @@ export default class BooksImageList extends Component {
     var result = this.fuse.search(search);
     this.setState({searchResults: result})
   }
+
   onPress(bookData) {
     const { navigate } = this.props.navigation;
     navigate('Details', bookData);
   }
 
-  renderRow(rowData, sectionId, index) {
+  renderRow(rowData) {
     const { navigate } = this.props.navigation;
     
     const cellViews = rowData.map((book, id) => {
       const bookImg = BookImagesData.getData(book.filename.replace('.json', '.jpg'));
       return (
-        <TouchableOpacity key={id} onPress={() => this.onPress(book)}>
-          <Card styleName="flex1ible">
-            <Image
-              styleName="medium-square"
-              source={bookImg}
-              resizeMode="cover"
-            />
-          </Card>
-        </TouchableOpacity>
+        <Avatar xlarge
+                key={book.title}
+                onPress={() => this.onPress(book)}
+                activeOpacity={0.7}
+                source={bookImg}
+                />
       );
     });
 
     return (
-      <GridRow columns={2}>
-        {cellViews}
-      </GridRow>
+      <View style={{
+        paddingLeft: 5,
+        paddingRight: 5,
+        marginTop:5,
+        flex: 1,
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        alignItems: 'center',
+      }}>
+      {cellViews}
+      </View>
     );
   }
 
   render() {
-    const groupedData = GridRow.groupByRows(this.state.searchResults, 2);
+    const groupedData = _.chunk(this.state.searchResults, 2)
 
     return (
-      <Screen>
+      <View>
         <SearchBar lightTheme 
           onChangeText={this.filterBooks}
           onClearText={this.clearSearch}
           placeholder='Book Name or Author' />
-        <ListView data={groupedData} renderRow={this.renderRow} />
-      </Screen> 
+
+        <List>
+          <FlatList
+            renderItem={({ item }) => {return this.renderRow(item);}}
+            data={groupedData}
+            keyExtractor={(item, index) => index}
+          />
+        </List>
+      </View> 
     );
   }
 }

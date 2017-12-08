@@ -2,25 +2,10 @@ import React, { Component } from 'react';
 import Fuse from 'fuse.js';
 
 import { NavigationActions } from 'react-navigation';
-import { SearchBar } from 'react-native-elements';
-
-import {
-Card,
-Divider,
-Screen,
-ListView,
-Row,
-Image,
-Title,
-Subtitle,
-TouchableOpacity,
-Caption,
-Button,
-Icon
-} from '@shoutem/ui';
+import {SearchBar, List, ListItem, Avatar } from 'react-native-elements'
+import {View, FlatList} from 'react-native';
 
 import BookImagesData from './assets/BookImagesData';
-import {View} from 'react-native';
 
 export default class BooksList extends Component {
   constructor(props) {
@@ -78,38 +63,40 @@ export default class BooksList extends Component {
     navigate('Details', bookData);
   }
 
-  renderRow(rowData, sectionId, index) {
+  renderRow(rowData) {
     const bookImg = BookImagesData.getData(rowData.filename.replace('.json', '.jpg'));
     return (
-
-      <TouchableOpacity onPress={() => this.onPress(rowData)}>
-      <Row>
-        <Image
-        styleName="small-avatar top"
-          source={bookImg}
-        />
-
-        <View styleName="vertical stretch space-between">
-          <Subtitle>{rowData.title}</Subtitle>
-          <View styleName="horizontal space-between">
-            <Caption>{rowData.author}</Caption>
-          </View>
-          <Divider styleName="line" />
-        </View>
-      </Row>
-      </TouchableOpacity>
+      <ListItem onPress={() => this.onPress(rowData)}
+        roundAvatar
+        title={rowData.title}
+        hideChevron={true}
+        subtitle={rowData.author}
+        avatar={<Avatar medium
+                rounded
+                source={bookImg}
+                />}
+      />
     )
   }
 
+  
   render() {
     return (
-      <Screen>
+      <View>
         <SearchBar lightTheme 
           onChangeText={this.filterBooks}
           onClearText={this.clearSearch}
           placeholder='Book Name or Author' />
-        <ListView data={this.state.searchResults} renderRow={this.renderRow} />
-      </Screen> 
+          
+        <List>
+          <FlatList
+            renderItem={({ item }) => {return this.renderRow(item);}}
+            data={this.state.searchResults}
+            keyExtractor={(item, index) => index}
+          />
+        </List>
+      
+      </View>
     );
   }
 }

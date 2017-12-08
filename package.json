@@ -7,7 +7,6 @@
 		"test": "jest"
 	},
 	"dependencies": {
-		"@shoutem/ui": "^0.21.3",
 		"create-react-class": "^15.6.2",
 		"fuse.js": "^3.2.0",
 		"prop-types": "^15.6.0",
@@ -19,7 +18,8 @@
 		"react-navigation": "^1.0.0-beta.19",
 		"react-redux": "^5.0.6",
 		"redux": "^3.7.2",
-		"redux-thunk": "^2.2.0"
+		"redux-thunk": "^2.2.0",
+		"underscore": "^1.8.3"
 	},
 	"devDependencies": {
 		"babel-jest": "21.2.0",

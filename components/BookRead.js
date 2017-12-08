@@ -1,16 +1,10 @@
 import { MarkdownView } from 'react-native-markdown-view'
 import React, { Component } from 'react';
-import {
-  View,
-  Heading,
-  ScrollView,
-  Text,
-  Screen,
-  Divider,
-  Button,
-  Icon
-} from '@shoutem/ui';
+import {View, ScrollView, StyleSheet} from 'react-native';
+import { Text, Divider, Button, Icon } from 'react-native-elements'
 
+const offColor = '#9E9E9E';
+const onColor = '#007bef'
 export default class BookRead extends Component {
   static navigationOptions = ({ navigation }) => ({
     title: `Chapter ${parseInt(navigation.state.params.chapter)+1}`,
@@ -22,8 +16,8 @@ export default class BookRead extends Component {
     this.goNext = this.goNext.bind(this);
 
     const currentChapter = this.props.navigation.state.params.chapter;
-    const hasPrev = currentChapter == 0 ? 'muted' : '';
-    const hasNext = currentChapter == this.props.navigation.state.params.book.length ? 'muted' : '';
+    const hasPrev = currentChapter == 0 ? offColor : onColor;
+    const hasNext = currentChapter + 1 == this.props.navigation.state.params.book.length ? offColor : onColor;
 
     this.state = {
       hasPrev: hasPrev,
@@ -37,8 +31,8 @@ export default class BookRead extends Component {
     const index = parseInt(this.state.currentChapter)-1;
     if (index >= 0) {
       const book = this.props.navigation.state.params.book;
-      const hasPrev = index == 0 ? 'muted' : '';
-      const hasNext = '';
+      const hasPrev = index == 0 ? offColor : onColor;
+      const hasNext = onColor;
 
       this.props.navigation.setParams({chapter: index});
       this.setState({
@@ -56,8 +50,8 @@ export default class BookRead extends Component {
     const book = this.props.navigation.state.params.book;
 
     if (index < book.length) {
-      const hasPrev = '';
-      const hasNext = index+1 == book.length ?  'muted' : '';
+      const hasPrev = onColor;
+      const hasNext = index+1 == book.length ?  offColor : onColor;
 
       this.props.navigation.setParams({chapter: index});
 
@@ -73,27 +67,39 @@ export default class BookRead extends Component {
   }
 
   render() {
-    const prevClass = "confirmation " + this.state.hasPrev;
-    const nextClass = "confirmation " + this.state.hasNext;
-
     return (
-      <Screen styleName="paper">
+      <View style={styles.paper}>
         <ScrollView style={styles.read} ref="_scrollView">
-          <Heading>{this.state.currentText.title}</Heading>
+          <Text style={styles.header} h3>{this.state.currentText.title}</Text>
           <Divider styleName="line" />
           <MarkdownView>{this.state.currentText.content}</MarkdownView>
         </ScrollView>
-        <View styleName="horizontal">
-            <Button onPress={this.goPrev} styleName={prevClass}><Icon name="left-arrow" /><Text>PREV</Text></Button>
-            <Button onPress={this.goNext} styleName={nextClass}><Icon name="right-arrow" /><Text>NEXT</Text></Button>
-          </View>
-      </Screen>
+        <Divider />
+        <View style={styles.navigation}>
+          <Icon raised name='chevron-left' type='font-awesome' color={this.state.hasPrev} onPress={this.goPrev} />
+          <Icon raised name='chevron-right'type='font-awesome' color={this.state.hasNext} onPress={this.goNext} />
+        </View>
+      </View>
     );
   }
 }
 
-const styles = {
-  read: {
-    padding: 15
+const styles = StyleSheet.create({
+  navigation: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+
   },
-}
+  header: {
+    paddingTop: 15
+  },
+  read: {
+    paddingLeft: 15,
+    paddingRight: 15,
+  },
+
+  paper: {
+    flex: 1,
+    backgroundColor: 'white'
+  }
+});
